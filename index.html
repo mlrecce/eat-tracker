@@ -228,6 +228,7 @@
 
 <div class="bottom-bar">
   <button class="btn btn-secondary" onclick="copyDaySummary()">Copy Summary</button>
+  <button class="btn btn-primary" onclick="copyForLog()">Copy for Log</button>
   <button class="btn btn-primary" onclick="exportToExcel()">Export to Excel</button>
 </div>
 
@@ -561,6 +562,26 @@ function copyDaySummary() {
   });
   lines.push('');
   lines.push('TOTAL: ' + totalCal + ' calories, ' + totalPro + 'g protein (' + entries.length + ' items)');
+  copyText(lines.join('\n'));
+}
+
+// ============================================================
+// COPY FOR LOG (pipe-delimited, all days, for import_food_log.py)
+// ============================================================
+function copyForLog() {
+  var allEntries = loadAllEntries();
+  var dates = Object.keys(allEntries).sort();
+  if (dates.length === 0) { showToast('No data to export'); return; }
+  var lines = [];
+  dates.forEach(function(dk) {
+    var entries = allEntries[dk];
+    if (!entries || entries.length === 0) return;
+    entries.forEach(function(e) {
+      // format: date|food_name|calories_per|protein_per|qty|notes
+      lines.push(dk + '|' + (e.name||'') + '|' + (e.calories||0) + '|' + (e.protein||0) + '|' + (e.qty||1) + '|' + (e.note||''));
+    });
+  });
+  if (!lines.length) { showToast('No data to export'); return; }
   copyText(lines.join('\n'));
 }
 
