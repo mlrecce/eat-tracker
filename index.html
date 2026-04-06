@@ -229,6 +229,7 @@
 <div class="bottom-bar">
   <button class="btn btn-secondary" onclick="copyDaySummary()">Copy Summary</button>
   <button class="btn btn-primary" onclick="copyForLog()">Copy for Log</button>
+  <button class="btn btn-danger" onclick="clearAllData()">Clear All</button>
   <button class="btn btn-primary" onclick="exportToExcel()">Export to Excel</button>
 </div>
 
@@ -563,6 +564,21 @@ function copyDaySummary() {
   lines.push('');
   lines.push('TOTAL: ' + totalCal + ' calories, ' + totalPro + 'g protein (' + entries.length + ' items)');
   copyText(lines.join('\n'));
+}
+
+// ============================================================
+// CLEAR ALL DATA
+// ============================================================
+function clearAllData() {
+  var allEntries = loadAllEntries();
+  var dates = Object.keys(allEntries);
+  var count = 0;
+  dates.forEach(function(dk) { count += (allEntries[dk] || []).length; });
+  if (count === 0) { showToast('Nothing to clear'); return; }
+  if (!confirm('Clear all food entries across ' + dates.length + ' day(s) (' + count + ' items)?\n\nMake sure you\'ve already copied to log or exported first!')) return;
+  saveAllEntries({});
+  render();
+  showToast('All data cleared');
 }
 
 // ============================================================
